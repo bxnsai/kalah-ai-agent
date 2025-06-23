@@ -2,4 +2,31 @@
 from games import *
 
 class Kalah(Game):
-    pass 
+    def __init__(self): 
+        board = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0]
+        moves = []
+        self.initial = GameState(to_move='MAX',moves=moves,board=board)
+
+    def actions(self, state):
+        pass 
+
+    def result(self, state, move):
+        pass 
+
+    def utility(self, state, player):
+        pass 
+
+    def terminal_test(self, state):
+        pass 
+
+    def display(self, state):
+        pass 
+
+
+
+if __name__ == '__main__':
+    kalah = Kalah()
+
+    utility = kalah.play_game(query_player,alpha_beta_player)
+
+    # display results 
