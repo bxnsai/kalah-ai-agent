@@ -49,7 +49,7 @@ class Kalah(Game):
                         new_board[12 - index ] = 0                
                         new_board[index] = 0                      # set own pit to 0
 
-            if state.to_move == 'MIN':
+            elif state.to_move == 'MIN':
                 new_board[index] += 1
                 stones -= 1
                 if stones == 0 and index == 13: # check if last stone is dropped in own store
@@ -97,16 +97,27 @@ class Kalah(Game):
         board = state.board
         print("Current Board:",board) 
 
+    def play_game(self, *players): # have to overide play_game to handle extra turns
+        """Play an n-person, move-alternating game, respecting extra turns."""
+        state = self.initial
+        while True:
+            current_player = players[0] if state.to_move == 'MAX' else players[1]
+            move = current_player(self, state)
+            state = self.result(state, move)
+
+            if self.terminal_test(state):
+                self.display(state)
+                return self.utility(state, 'MIN')  # Or 'MIN', depending on who you want the score from
 
 
 if __name__ == '__main__':
     kalah = Kalah()
 
-    utility = kalah.play_game(query_player, lambda game, state: alpha_beta_cutoff_search(state, game, d=6))
+    utility = kalah.play_game(query_player, alpha_beta_player)
 
-    if utility < 0:
+    if utility > 0:
         print("You win!")
-    elif utility > 0:
+    elif utility < 0:
         print("You lose!")
     else:
         print("It's a draw!")

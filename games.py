@@ -199,8 +199,31 @@ def random_player(game, state):
 
 
 def alpha_beta_player(game, state):
-    return alpha_beta_search(state, game)
+  
+    move = alpha_beta_cutoff_search(state, game, d=6, eval_fn=eval_fn)
+    print(f"AI chooses: {move}")
+    print(state.board)
+    return move
 
+def eval_fn(state):
+    board = state.board
+    ai_store = board[13]
+    player_store = board[6]
+    ai_pits = sum(board[7:13])
+    player_pits = sum(board[0:6])
+
+    score_diff = ai_store - player_store
+    pit_control = ai_pits - player_pits
+
+    # Reward extra turn potential (if current player is AI and has stones that could land in store)
+    extra_turn_bonus = 0
+    if state.to_move == 'MIN':
+        for i in range(7, 13):
+            stones = board[i]
+            if stones > 0 and (i + stones) % 14 == 13:
+                extra_turn_bonus += 1  # you could weight this higher (e.g. +3 per potential extra turn)
+
+    return score_diff + 0.5 * pit_control + 2 * extra_turn_bonus
 
 def minmax_player(game,state):
     return minmax_decision(state,game)
