@@ -14,9 +14,13 @@ class Kalah(Game):
         pass 
 
     def utility(self, state, player):
-        pass 
+        if self.terminal_test(state):
+            max_score = state.board[6]
+            min_score = state.board[13]
+            return (max_score - min_score) if player == 'MAX' else (min_score - max_score)
 
-    def terminal_test(self, state):
+
+    def terminal_test(self, state) -> bool:
         # Check if either player has no seeds left in their pits
         return all(i == 0 for i in state.board[:6]) or all(i == 0 for i in state.board[7:13])
 
