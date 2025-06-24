@@ -42,6 +42,12 @@ class Kalah(Game):
                 if stones == 0 and index == 6: # check if last stone is dropped in own store
                     next_player = 'MAX'
                     again = True
+                elif stones == 0 and 0 <= index <= 5:
+                    # if last stone is dropped in own pit, check for capture
+                    if new_board[index] == 1 and new_board[12 - index] > 0:
+                        new_board[6] += new_board[12 - index] + 1 # capture opponent's seeds
+                        new_board[12 - index ] = 0                
+                        new_board[index] = 0                      # set own pit to 0
 
             if state.to_move == 'MIN':
                 new_board[index] += 1
@@ -49,6 +55,12 @@ class Kalah(Game):
                 if stones == 0 and index == 13: # check if last stone is dropped in own store
                     next_player = 'MIN'
                     again = True
+                elif stones == 0 and 7 <= index <= 12:
+                    # if last stone is dropped in own pit, check for capture
+                    if new_board[index] == 1 and new_board[12 - index] > 0:
+                        new_board[13] += new_board[12 - index] + 1 # capture opponent's seeds
+                        new_board[12 - index] = 0
+                        new_board[index] = 0                      # set own pit to 0
         
         if not again: next_player = 'MIN' if state.to_move == 'MAX' else 'MAX'
         if next_player == 'MAX':
