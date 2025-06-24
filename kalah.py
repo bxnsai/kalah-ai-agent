@@ -5,10 +5,10 @@ class Kalah(Game):
     def __init__(self): 
         board = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0]
         moves = [0,1,2,3,4,5]
-        self.initial = GameState(to_move='MAX',moves=moves,board=board)
+        self.initial = GameState(to_move='MAX',utility=0, moves=moves,board=board)
 
     def actions(self, state):
-        pass 
+        return state.moves 
 
     def result(self, state, move):
         pass 
@@ -17,7 +17,8 @@ class Kalah(Game):
         pass 
 
     def terminal_test(self, state):
-        pass 
+        # Check if either player has no seeds left in their pits
+        return all(i == 0 for i in state.board[:6]) or all(i == 0 for i in state.board[7:13])
 
     def display(self, state):
         pass 
@@ -27,6 +28,6 @@ class Kalah(Game):
 if __name__ == '__main__':
     kalah = Kalah()
 
-    utility = kalah.play_game(query_player,alpha_beta_cutoff_search)
+    # utility = kalah.play_game(query_player,alpha_beta_cutoff_search)
 
     # display results 
