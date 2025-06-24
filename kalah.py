@@ -8,7 +8,17 @@ class Kalah(Game):
         self.initial = GameState(to_move='MAX',utility=0, moves=moves,board=board)
 
     def actions(self, state):
-        return state.moves 
+        choice = []
+        if state.to_move == 'MAX':
+            for i in range(6):
+                if state.board[i] > 0:
+                    choice.append(i)
+        elif state.to_move == 'MIN':
+            for i in range(7, 13):
+                if state.board[i] > 0:
+                    choice.append(i)
+                    
+        return choice 
 
     def result(self, state, move):
         pass 
