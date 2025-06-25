@@ -1,30 +1,36 @@
 # User Interface for Kalah
 from tkinter import Tk
-
+from kalah import Kalah
 
 
 class KalahUI:
-    def __init__(self, game=None):
-        self.game = game
+    def __init__(self):
+        self.game = Kalah()
+        self.drawBoard()
+        self.update_board()
+
+    def drawBoard(self):
+        self.state = self.game.initial 
         self.window = Tk()
         self.window.title("Kalah Game")
         self.create_widgets()
         self.window.mainloop()
 
-    def create_widgets(self):
-        self.window.geometry("600x300")
-        # Create the main game board and controls here
-        pass  # Placeholder for actual UI creation code
-
-    def update_board(self, state):
+    def updateBoard(self):
         # Update the UI based on the current game state
         pass  # Placeholder for actual board update code
 
-    def handle_move(self, move):
-        # Handle player moves and update the game state
-        pass  # Placeholder for actual move handling code
+    def clickHandler(self): # determines which pit was clicked & validates 
+        pass 
 
+    def performMove(self): # updates board & calls AI if needed 
+        pass 
 
+    def showWinner(self): # displays winner of game 
+        pass 
+
+    def resetGame(self):
+        pass 
 
 if __name__ == "__main__":
 
