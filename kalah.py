@@ -2,10 +2,14 @@
 from games import *
 
 class Kalah(Game):
+    OPPOSITE_PITS = {0: 12, 1: 11, 2: 10, 3: 9, 4: 8, 5: 7,
+                     7: 5, 8: 4, 9: 3, 10: 2, 11: 1, 12: 0}
+
     def __init__(self): 
         board = [4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0]
         moves = [0,1,2,3,4,5]
         self.initial = GameState(to_move='MAX',utility=0, moves=moves,board=board)
+
 
     def actions(self, state) -> list:
         choice = []
@@ -29,55 +33,63 @@ class Kalah(Game):
         again = False 
         moves = []
 
+
+        landing_index = -1  # track where the last stone lands
+
+        # distribute stones
         while stones > 0:
-            index = (index + 1) % 14  # move to the next pit to wrap around the board
+            index = (index + 1) % 14
+            # Skip opponent's store
+            if state.to_move == 'MAX' and index == 13:
+                continue
+            if state.to_move == 'MIN' and index == 6:
+                continue
+            new_board[index] += 1
+            stones -= 1
+            landing_index = index
 
-            # skip the opponent's store
-            if state.to_move == 'MAX' and index == 13: continue 
-            if state.to_move == 'MIN' and index == 6: continue
+        # check for capture
+        if state.to_move == 'MAX':
+            if landing_index == 6:
+                again = True
+            elif 0 <= landing_index <= 5 and new_board[landing_index] == 1:
+                opp_index = self.OPPOSITE_PITS[landing_index]
+                if new_board[opp_index] > 0:
+                    new_board[6] += new_board[opp_index] + 1
+                    new_board[opp_index] = 0
+                    new_board[landing_index] = 0
 
-            if state.to_move == 'MAX':
-                new_board[index] += 1
-                stones -= 1
-                if stones == 0 and index == 6: # check if last stone is dropped in own store
-                    next_player = 'MAX'
-                    again = True
-                elif stones == 0 and 0 <= index <= 5:
-                    # if last stone is dropped in own pit, check for capture
-                    if new_board[index] == 1 and new_board[12 - index] > 0:
-                        new_board[6] += new_board[12 - index] + 1 # capture opponent's seeds
-                        new_board[12 - index ] = 0                
-                        new_board[index] = 0                      # set own pit to 0
+        elif state.to_move == 'MIN':
+            if landing_index == 13:
+                again = True
+            elif 7 <= landing_index <= 12 and new_board[landing_index] == 1:
+                opp_index = self.OPPOSITE_PITS[landing_index]
+                if new_board[opp_index] > 0:
+                    new_board[13] += new_board[opp_index] + 1
+                    new_board[opp_index] = 0
+                    new_board[landing_index] = 0
 
-            elif state.to_move == 'MIN':
-                new_board[index] += 1
-                stones -= 1
-                if stones == 0 and index == 13: # check if last stone is dropped in own store
-                    next_player = 'MIN'
-                    again = True
-                elif stones == 0 and 7 <= index <= 12:
-                    # if last stone is dropped in own pit, check for capture
-                    if new_board[index] == 1 and new_board[12 - index] > 0:
-                        new_board[13] += new_board[12 - index] + 1 # capture opponent's seeds
-                        new_board[12 - index] = 0
-                        new_board[index] = 0                      # set own pit to 0
-        
-        if not again: next_player = 'MIN' if state.to_move == 'MAX' else 'MAX'
-        else: next_player = state.to_move  # stay with the same player if they get another turn
+
+        # determine next player
+        next_player = state.to_move if again else ('MIN' if state.to_move == 'MAX' else 'MAX')
+
+        # get available moves for next player
         if next_player == 'MAX':
             moves = [i for i in range(6) if new_board[i] > 0]
-        elif next_player == 'MIN':
+        else:
             moves = [i for i in range(7, 13) if new_board[i] > 0]
 
-        # Sweep 
+        # sweep 
         if self.terminal_test(GameState(to_move=next_player, utility=0, moves=moves, board=new_board)):
             new_board[6] += sum(new_board[:6])  # MAX collects all seeds in its pits
             new_board[13] += sum(new_board[7:13])  # MIN collects all seeds in its pits
             for i in range(0, 6): new_board[i] = 0 # set MAX pits to 0
             for i in range(7, 13): new_board[i] = 0 # set MIN pits to 0
-    
+            utility = new_board[6] - new_board[13]
+        else:
+            utility = 0
 
-        return GameState(to_move=next_player, utility=0, moves=moves, board=new_board)
+        return GameState(to_move=next_player, utility=utility, moves=moves, board=new_board)
 
 
 
@@ -95,15 +107,19 @@ class Kalah(Game):
 
     def display(self, state):
         board = state.board
-        print("Current Board:",board) 
+        side1 = tuple(board[:7])
+        side2 = tuple(board[7:])
+        print("Current Board:",side1, side2) 
 
     def play_game(self, *players): # have to overide play_game to handle extra turns
         """Play an n-person, move-alternating game, respecting extra turns."""
         state = self.initial
         while True:
+            self.display(state)
             current_player = players[0] if state.to_move == 'MAX' else players[1]
             move = current_player(self, state)
             state = self.result(state, move)
+
 
             if self.terminal_test(state):
                 self.display(state)
@@ -115,9 +131,9 @@ if __name__ == '__main__':
 
     utility = kalah.play_game(query_player, alpha_beta_player)
 
-    if utility > 0:
+    if utility < 0:
         print("You win!")
-    elif utility < 0:
+    elif utility > 0:
         print("You lose!")
     else:
         print("It's a draw!")

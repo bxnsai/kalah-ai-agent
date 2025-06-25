@@ -177,8 +177,6 @@ def alpha_beta_cutoff_search(state, game, d=4, cutoff_test=None, eval_fn=None):
 
 def query_player(game, state):
     """Make a move by querying standard input."""
-    print("current state:")
-    game.display(state)
     print("available moves: {}".format(game.actions(state)))
     print("")
     move = None
@@ -202,7 +200,6 @@ def alpha_beta_player(game, state):
   
     move = alpha_beta_cutoff_search(state, game, d=6, eval_fn=eval_fn)
     print(f"AI chooses: {move}")
-    print(state.board)
     return move
 
 def eval_fn(state):
