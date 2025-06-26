@@ -18,7 +18,9 @@ class KalahUI(QMainWindow):
 
         self.game = Kalah()  # Initialize the Kalah game instance
         self.PlayerScore = 0
-        self.AiScore = 0        
+        self.AiScore = 0 
+        self.PlayerStores = [0] * 6  # Player's pits
+        self.AiStores = [0] * 6  # AI's pits 
         self.drawBoard()
 
 
@@ -57,33 +59,64 @@ class KalahUI(QMainWindow):
 
         # Score labels
         ai_score = self.scene.addText(f"AI Score: {self.AiScore}", QFont("Arial", 24))
+        ai_score.setDefaultTextColor(Qt.GlobalColor.black)
         ai_score.setPos(76, 463)
 
         player_score = self.scene.addText(f"Your Score: {self.PlayerScore}", QFont("Arial", 24))
+        player_score.setDefaultTextColor(Qt.GlobalColor.black)
         player_score.setPos(795, 463)
+
+        for _ in range(6):
+            # AI pits labels
+            pit_label = self.scene.addText(f"{self.PlayerStores[_]}", QFont("Arial", 24))
+            pit_label.setDefaultTextColor(Qt.GlobalColor.white)
+            pit_label.setPos(187 + _ * 119, 154)
+
+            # Player pits labels
+            pit_label = self.scene.addText(f"{self.AiStores[_]}", QFont("Arial", 24))
+            pit_label.setDefaultTextColor(Qt.GlobalColor.white)
+            pit_label.setPos(187 + _ * 119, 402)
+
 
         stone_pixmaps = []
         for i in range(1, 7):
             path = f"beads/bead{i}.png"
             if os.path.exists(path):
-                stone_pixmaps.append(QPixmap(path))
+                stone_pixmaps.append(QPixmap(path).scaled(20,20))
 
         if stone_pixmaps:
             # AI Store stones
-            for _ in range(6):
-                x = random.randint(35, 115)
-                y = random.randint(185, 375)
+            '''for _ in range(6):
+                x = random.randint(50, 110)
+                y = random.randint(210, 370)
                 stone_item = QGraphicsPixmapItem(random.choice(stone_pixmaps))
                 stone_item.setPos(x, y)
-                self.scene.addItem(stone_item)
+                self.scene.addItem(stone_item)'''
 
             # Player Store stones
-            for _ in range(6):
-                x = random.randint(855, 935)
-                y = random.randint(185, 375)
+            '''for _ in range(6):
+                x = random.randint(870, 920)
+                y = random.randint(210, 370)
                 stone_item = QGraphicsPixmapItem(random.choice(stone_pixmaps))
                 stone_item.setPos(x, y)
-                self.scene.addItem(stone_item)
+                self.scene.addItem(stone_item)'''
+
+
+            for i in range(6): 
+                for _ in range(4): #ai pits 
+                    x = random.randint((175 + i * 119),225 + i * 119)
+                    y = random.randint(211, 261)
+                    stone_item = QGraphicsPixmapItem(random.choice(stone_pixmaps))
+                    stone_item.setPos(x, y)
+                    self.scene.addItem(stone_item)
+
+                for _ in range(4): #player pits
+                    x = random.randint((175 + i * 119),225 + i * 119)
+                    y = random.randint(321, 371)
+                    stone_item = QGraphicsPixmapItem(random.choice(stone_pixmaps))
+                    stone_item.setPos(x, y)
+                    self.scene.addItem(stone_item)
+            
         else:
             print(f"No bead images found")
 
