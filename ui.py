@@ -1,8 +1,10 @@
 # User Interface for Kalah
 from kalah import Kalah
-from PyQt6.QtWidgets import QMainWindow, QGraphicsScene, QGraphicsView
-from PyQt6.QtGui import QBrush, QPen, QColor, QPainterPath, QFont, QPainter
+from PyQt6.QtWidgets import QMainWindow, QGraphicsScene, QGraphicsView, QGraphicsPixmapItem
+from PyQt6.QtGui import QBrush, QPen, QColor, QPainterPath, QFont, QPainter, QPixmap
 from PyQt6.QtCore import QRectF,Qt
+import random
+import os 
 
 class KalahUI(QMainWindow):
     def __init__(self):
@@ -15,7 +17,10 @@ class KalahUI(QMainWindow):
         self.setCentralWidget(self.view)
 
         self.game = Kalah()  # Initialize the Kalah game instance
+        self.PlayerScore = 0
+        self.AiScore = 0        
         self.drawBoard()
+
 
 
     def drawBoard(self):
@@ -48,14 +53,39 @@ class KalahUI(QMainWindow):
         # "Your Turn" label
         turn_label = self.scene.addText("Your Turn", QFont("Arial", 16, QFont.Weight.Bold))
         turn_label.setDefaultTextColor(Qt.GlobalColor.red)
-        turn_label.setPos(450, 110)
+        turn_label.setPos(459, 107)
 
         # Score labels
-        ai_score = self.scene.addText("AI Score: ${AiScore}", QFont("Arial", 14))
-        ai_score.setPos(80, 470)
+        ai_score = self.scene.addText(f"AI Score: {self.AiScore}", QFont("Arial", 24))
+        ai_score.setPos(76, 463)
 
-        player_score = self.scene.addText("Your Score: ${PlayerScore}", QFont("Arial", 14))
-        player_score.setPos(780, 470)
+        player_score = self.scene.addText(f"Your Score: {self.PlayerScore}", QFont("Arial", 24))
+        player_score.setPos(795, 463)
+
+        stone_pixmaps = []
+        for i in range(1, 7):
+            path = f"beads/bead{i}.png"
+            if os.path.exists(path):
+                stone_pixmaps.append(QPixmap(path))
+
+        if stone_pixmaps:
+            # AI Store stones
+            for _ in range(6):
+                x = random.randint(35, 115)
+                y = random.randint(185, 375)
+                stone_item = QGraphicsPixmapItem(random.choice(stone_pixmaps))
+                stone_item.setPos(x, y)
+                self.scene.addItem(stone_item)
+
+            # Player Store stones
+            for _ in range(6):
+                x = random.randint(855, 935)
+                y = random.randint(185, 375)
+                stone_item = QGraphicsPixmapItem(random.choice(stone_pixmaps))
+                stone_item.setPos(x, y)
+                self.scene.addItem(stone_item)
+        else:
+            print(f"No bead images found")
 
     def create_rounded_rect(self,x1, y1, x2, y2, r=75, **kwargs):
         # Draw four arcs (corners)
