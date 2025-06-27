@@ -1,5 +1,5 @@
 # User Interface for Kalah
-from PyQt6.QtWidgets import QMainWindow, QGraphicsScene, QGraphicsView, QGraphicsPixmapItem
+from PyQt6.QtWidgets import QMainWindow, QGraphicsScene, QGraphicsView, QGraphicsPixmapItem, QGraphicsEllipseItem
 from PyQt6.QtGui import QBrush, QPen, QColor, QPainterPath, QFont, QPainter, QPixmap
 from PyQt6.QtCore import QRectF,Qt
 import random
@@ -52,7 +52,16 @@ class KalahUI(QMainWindow):
         for i in range(6):
             x = 147 + i * 119
             self.scene.addEllipse(QRectF(x, 183, 105, 105), black_pen, white_brush)  # AI row (top)
-            self.scene.addEllipse(QRectF(x, 293, 105, 105), black_pen, white_brush)  # Player row (bottom)
+            ellipse = QGraphicsEllipseItem(QRectF(x, 293, 105, 105))  # Player row (bottom)
+            ellipse.setBrush(QBrush(Qt.GlobalColor.white))
+            ellipse.setPen(black_pen)
+            ellipse.setData(0, 5 - i)
+            ellipse.setFlag(QGraphicsPixmapItem.GraphicsItemFlag.ItemIsSelectable)
+            ellipse.setAcceptHoverEvents(True)
+            ellipse.mousePressEvent = self.clickHandler
+            self.scene.addItem(ellipse)
+
+
 
             # AI pits labels
             pit_label = self.scene.addText(f"{self.state.board[7 + i]}", QFont("Arial", 24))
@@ -119,7 +128,7 @@ class KalahUI(QMainWindow):
         pass 
 
 
-    def clickHandler(self): # determines which pit was clicked & validates 
+    def clickHandler(self, event): # determines which pit was clicked & validates 
         pass 
 
     def performMove(self): # updates board & calls AI if needed 
