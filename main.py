@@ -6,6 +6,6 @@ from ui import KalahUI
 
 game = Kalah()  # Initialize the Kalah game instance
 app = QApplication(sys.argv)
-window = KalahUI(game)  # Initialize the UI with the game instance
-window.show()  # Show the main window
-sys.exit(app.exec())  # Start the application event loop
+window = KalahUI(game) 
+window.show() 
+sys.exit(app.exec())  
