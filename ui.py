@@ -4,7 +4,7 @@ from PyQt6.QtGui import QBrush, QPen, QColor, QPainterPath, QFont, QPainter, QPi
 from PyQt6.QtCore import QRectF,Qt, QTimer
 import random
 import os 
-from games import GameState, alpha_beta_cutoff_search, alpha_beta_player
+from games import GameState, alpha_beta_player
 
 class KalahUI(QMainWindow):
 
@@ -34,19 +34,20 @@ class KalahUI(QMainWindow):
         board_brush = QBrush(QColor("black"))
         gray_brush = QBrush(QColor("lightgray"))
 
-        # Background (outer gray)
+        # Background 
         self.scene.addRect(QRectF(0, 0, 1000, 600), black_pen, gray_brush)
 
-        # Rounded black board background
+        # Board
         path = QPainterPath()
         path.addRoundedRect(QRectF(10, 139, 980, 309), 75, 75)
         self.scene.addPath(path, black_pen, board_brush)
 
         board = self.state.board
         print(f"Current Board State: {board}")
+        
         # Stores
-        self.scene.addEllipse(QRectF(27, 178, 120, 220), black_pen, white_brush)     # Left (AI)
-        self.scene.addEllipse(QRectF(847, 178, 120, 220), black_pen, white_brush)    # Right (Player)
+        self.scene.addEllipse(QRectF(27, 178, 120, 220), black_pen, white_brush)     
+        self.scene.addEllipse(QRectF(847, 178, 120, 220), black_pen, white_brush)    
         
 
         # Pits (6 top row for AI, 6 bottom row for Player)
@@ -147,12 +148,6 @@ class KalahUI(QMainWindow):
         # Assign event handler to reset button
         reset_group.mousePressEvent = lambda event: self.resetGame()
 
-    def updateBoard(self): # updates pit counts, shows whose turn it is, etc.
-        # two lists for pit labels and counts
-
-        # fill according to state, maybe view the dropping of seeds and show that 
-        pass 
-
 
     def clickHandler(self, event, pit_index): # determines which pit was clicked & validates 
         if self.state.to_move != 'MAX':
@@ -237,4 +232,4 @@ class KalahUI(QMainWindow):
 
 if __name__ == "__main__":
 
-    ui = KalahUI()  # Initialize the UI with the game instance
+    ui = KalahUI()  # initialize the UI with the game instance
